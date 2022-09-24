@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .mapouter {
+            position: relative;
+            text-align: right;
+            height: 500px;
+            width: 300px;
+        }
+    </style><a href="https://www.embedgooglemap.net"></a>
+    <style>
+        .gmap_canvas {
+            overflow: hidden;
+            background: none !important;
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+    <style>
+        * {
+            margin: 0px;
+            font-family: sans-serif;
+        }
+
+        #parentContainer {
+            display: flex;
+            background-color: rgb(246, 239, 239);
+        }
+
+        #navbar {
+
+            height: 80px;
+            background-color: cadetblue;
+            display: flex;
+            /* justify-content: space-evenly; */
+        }
+
+        input {
+            height: 30px;
+            width: 400px;
+            margin-top: 20px;
+            margin-left: 300px;
+            padding-left: 10px;
+            border: none;
+            border-radius: 20px;
+        }
+
+        button {
+            font-weight: 600;
+            height: 32px;
+            margin-top: 20px;
+            margin-left: 6px;
+            border: none;
+            border-radius: 20px;
+            padding-right: 10px;
+            padding-left: 10px;
+
+
+        }
+
+        #container {
+            width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(8,1fr);
+            gap: 5px;
+            background-image: url("https://icon-library.com/images/weather-icon-gif/weather-icon-gif-15.jpg");
+            
+
+
+        }
+
+        #container>div {
+            /* border: 1px solid blue; */
+            /* width: 60%; */
+            width: 100px;
+            height: 120px;
+            background-color: black;
+            margin-top: 200px;
+            border-radius: 40px;
+
+
+        }
+
+        .flaticons {
+           
+            display: block;
+            height: 30px;
+            width: 30px;
+            margin: auto;
+            margin-top: 20px;
+        }
+
+       
+        p{
+            width: 85%;
+            color: white;
+            font-weight: 600;
+            margin: auto;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav id="navbar">
+        <input type="text" id="city" placeholder="Search City">
+        <button onclick="getdata()">
+            Search Weather
+        </button>
+    </nav>
+    <div id="parentContainer">
+        <div id="container"></div>
+
+
+        <div class="mapouter">
+            <div class="gmap_canvas"><iframe width="600" height="500" id="gmap_canvas" scrolling="no" marginheight="0"
+                    marginwidth="0"></iframe>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</body>
+
+</html>
+<script>
+
+
+
+    getdata(x = true)
+
+
+
+
+
+
+    function getdata(a) {
+        let city;
+        if (a) {
+            city = "New Delhi"
+        }
+        else {
+            city = document.getElementById("city").value;
+        }
+
+        let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=76836e5083d09b4823b7ee0a5cefa7e8`
+
+
+        let container = document.getElementById("container")
+        async function append() {
+            container.innerHTML = [];
+            try {
+                let resp = await fetch(url);
+                let data = await resp.json();
+
+                // console.log(data);
+
+                let lon = (data.coord.lon);
+                let lat = (data.coord.lat);
+
+
+                // 
+
+                let url1 = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude={part}&appid=76836e5083d09b4823b7ee0a5cefa7e8`
+
+                try {
+                    let resp1 = await fetch(url1);
+                    let data1 = await resp1.json();
+
+                    console.log(data1.daily);
+                    // let i=0;
+                    appendTo(data1.daily);
+
+                    console.log()
+                   
+
+                } catch (err) {
+                    console.log(err);
+                }
+
+
+                let iframe = document.getElementById("gmap_canvas");
+                iframe.src = `https://maps.google.com/maps?q=${data.name}&t=&z=13&ie=UTF8&iwloc=&output=embed`
+
+
+            }
+            catch (err) {
+                console.log(err);
+            }
+
+        }
+
+        append()
+
+
+
+    }
+
+    
+
+
+
+
+
+
+function appendTo(d){
+        d.forEach(function (el) {
+
+
+
+let div = document.createElement("div");
+
+let imgwea = document.createElement("img")
+imgwea.setAttribute("class", "flaticons")
+imgwea.src = "https://cdn-icons-png.flaticon.com/128/4365/4365691.png"
+
+let temp_max = document.createElement("p")
+temp_max.innerText = `Min: ${(+(el.temp.min)/ 10).toFixed(2)}`
+console.log(temp_max)
+
+
+let temp_min = document.createElement("p")
+temp_min.innerText = `Max: ${(+(el.temp.max) / 10).toFixed(2)}`
+
+div.append(imgwea,temp_max, temp_min)
+container.append(div)
+
+
+})  
+    }
+   
+
+
+
+
+
+</script>
